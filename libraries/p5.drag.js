@@ -1,4 +1,4 @@
-//TODO: add support for other shapes --> rectangle
+//TODO: add support for other shapes --> triangle
 //TODO: make it possible to call createDraggable functions inside draw() --> prevent duplicates in object_list[]
 //TODO: find a better way to handle undefined objects (i.e when user clicks outside the shapes)
 
@@ -48,7 +48,7 @@ p5.prototype.createDraggableSquare = function(x, y, side, color) {
 //Generates javascript object for ellipse
 p5.prototype.createDraggableEllipse = function(x, y, width, height, color) {
     
-    this.id = _id++
+    this.id = _id++;
     this.x = x;
     this.y = y;
     this.w = width;
@@ -56,6 +56,26 @@ p5.prototype.createDraggableEllipse = function(x, y, width, height, color) {
     this.col = color;
     var obj = {
         type: "ellipse",
+        id: this.id,
+        x: this.x,
+        y: this.y,
+        w: this.w,
+        h: this.h,
+        col: this.col
+    };
+    object_list.push(obj);
+}
+
+p5.prototype.createDraggableRect = function(x, y, width, height, color) {
+    
+    this.id = _id++;
+    this.x = x;
+    this.y = y;
+    this.w = width;
+    this.h = height;
+    this.col = color;
+    var obj = {
+        type: "rectangle",
         id: this.id,
         x: this.x,
         y: this.y,
@@ -83,6 +103,10 @@ p5.prototype.display = function () {
             fill(shape.col);
             ellipse(shape.x, shape.y, shape.w, shape.h);
         }
+        else if(shape.type == "rectangle"){
+            fill(shape.col);
+            rect(shape.x, shape.y, shape.w, shape.h);
+        }
     });
 }
 
@@ -109,6 +133,13 @@ p5.prototype.getCurrentObj = function() {
         else if(object_list[i].type == "ellipse"){
             var d = dist(object_list[i].x, object_list[i].y, mouseX, mouseY);
             if(d <= object_list[i].h/2){
+                Isdragging = true;
+                return object_list[i];
+            }
+        }
+        else if(object_list[i].type == "rectangle"){
+            var d = dist(object_list[i].x + (object_list[i].w/2), object_list[i].y + (object_list[i].h/2), mouseX, mouseY);
+            if(d <= min(object_list[i].w/2, object_list[i].h/2)){
                 Isdragging = true;
                 return object_list[i];
             }
@@ -163,6 +194,18 @@ p5.prototype.drag = function(current_obj) {
         };
         object_list.push(repositioned_obj);
     }
+    else if(this.current_obj.type == "rectangle"){
+        var repositioned_obj = {
+            type: this.current_obj.type,
+            id: this.current_obj.id,
+            x: mouseX - this.current_obj.w/2,    //TODO: check if object goes out of canvas bounds
+            y: mouseY - this.current_obj.h/2,
+            w: this.current_obj.w,
+            h: this.current_obj.h,
+            col: this.current_obj.col
+        };
+        object_list.push(repositioned_obj);
+    }
 }
 
 //Creates a shadow of the object (currently being dragged) under the cursor
@@ -179,6 +222,9 @@ p5.prototype.drawShadow = function(current_obj) {
     }
     if(this.current_obj.type == "ellipse"){
         ellipse(mouseX, mouseY, this.current_obj.w, this.current_obj.h);
+    }
+    if(this.current_obj.type == "rectangle"){
+        rect(mouseX-this.current_obj.w/2, mouseY-this.current_obj.h/2, this.current_obj.w, this.current_obj.h);
     }
     pop();
 }
