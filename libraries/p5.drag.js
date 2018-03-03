@@ -1,4 +1,4 @@
-//TODO: add support for other shapes --> triangle
+//FIXME: add support for other shapes --> triangle
 //TODO: make it possible to call createDraggable functions inside draw() --> prevent duplicates in object_list[]
 //TODO: find a better way to handle undefined objects (i.e when user clicks outside the shapes)
 
@@ -86,6 +86,33 @@ p5.prototype.createDraggableRect = function(x, y, width, height, color) {
     object_list.push(obj);
 }
 
+p5.prototype.createDraggableTriangle = function(x1, y1, x2, y2, x3, y3, color) {
+    
+    this.id = _id++;
+    this.x1 = x1;
+    this.y1 = y1;
+    this.x2 = x2;
+    this.y2 = y2;
+    this.x3 = x3;
+    this.y3 = y3;
+    this.col = color;
+    var obj = {
+        type: "triangle",
+        id: this.id,
+        x1: this.x1,
+        y1: this.y1,
+        x2: this.x2,
+        y2: this.y2,
+        x3: this.x3,
+        y3: this.y3,
+        tri_base: this.x3 - this.x1,
+        tri_height: this.y3 - this.y1,
+        tri_side_length: dist(this.x1, this.y1, this.x3, this.y3),
+        col: this.col
+    };
+    object_list.push(obj);
+}
+
 //Renders all the shapes currently in the object_list array
 //Needs to be called in draw()
 p5.prototype.display = function () {
@@ -106,6 +133,10 @@ p5.prototype.display = function () {
         else if(shape.type == "rectangle"){
             fill(shape.col);
             rect(shape.x, shape.y, shape.w, shape.h);
+        }
+        else if(shape.type == "triangle"){
+            fill(shape.col);
+            triangle(shape.x1, shape.y1, shape.x2, shape.y2, shape.x3, shape.y3);
         }
     });
 }
@@ -141,6 +172,18 @@ p5.prototype.getCurrentObj = function() {
             var d = dist(object_list[i].x + (object_list[i].w/2), object_list[i].y + (object_list[i].h/2), mouseX, mouseY);
             if(d <= min(object_list[i].w/2, object_list[i].h/2)){
                 Isdragging = true;
+                return object_list[i];
+            }
+        }
+        else if(object_list[i].type == "triangle"){
+            var a = object_list[i].tri_side_length;
+            var r = (a*(sqrt(3)))/6;
+            var mid_point_x = object_list[i].tri_base/2;
+            var mid_point_y = object_list[i].tri_height/2;
+            var d = dist(mid_point_x, mid_point_y, mouseX, mouseY);
+            if(d <= r){
+                Isdragging = true;
+                console.log(object_list[i]);
                 return object_list[i];
             }
         }
@@ -206,6 +249,31 @@ p5.prototype.drag = function(current_obj) {
         };
         object_list.push(repositioned_obj);
     }
+
+    else if(this.current_obj.type == "triangle"){
+        var r = (this.current_obj[i].tri_side_length*sqrt(3))/6;
+        var x1 = mouseX - (this.current_obj.tri_side_length/2);
+        var y1 = mouseY + (sqrt(3)/6)*this.current_obj.tri_side_length;
+        var x2 = mouseX;
+        var y2 = mouseY - (sqrt(3)/3)*this.current_obj.tri_side_length;
+        var x3 = mouseX + (this.current_obj.tri_side_length/2);
+        var y3 = mouseY + (sqrt(3)/6)*this.current_obj.tri_side_length;
+        var repositioned_obj = {
+            type: this.current_obj.type,
+            id: this.current_obj.id,
+            x1: x1,
+            y1: y1,
+            x2: x2,
+            y2: y2,
+            x3: x3,
+            y3: y3,
+            tri_base: this.current_obj.tri_base,
+            tri_height: this.current_obj.tri_height,
+            tri_side_length: this.current_obj.tri_side_length,
+            col: this.current_obj.col
+        };
+        object_list.push(repositioned_obj);
+    }
 }
 
 //Creates a shadow of the object (currently being dragged) under the cursor
@@ -225,6 +293,15 @@ p5.prototype.drawShadow = function(current_obj) {
     }
     if(this.current_obj.type == "rectangle"){
         rect(mouseX-this.current_obj.w/2, mouseY-this.current_obj.h/2, this.current_obj.w, this.current_obj.h);
+    }
+    if(this.current_obj.type == "triangle"){
+        var x1 = mouseX - (this.current_obj.tri_side_length/2);
+        var y1 = mouseY + (sqrt(3)/6)*this.current_obj.tri_side_length;
+        var x2 = mouseX;
+        var y2 = mouseY - (sqrt(3)/3)*this.current_obj.tri_side_length;
+        var x3 = mouseX + (this.current_obj.tri_side_length/2);
+        var y3 = mouseY + (sqrt(3)/6)*this.current_obj.tri_side_length;
+        triangle(x1, y1, x2, y2, x3, y3);
     }
     pop();
 }
