@@ -43,46 +43,46 @@ p5.prototype.display = function () {
     }
 }
 
-p5.prototype.findShapeType = function(mx, my) {
+p5.prototype.recognizeShape = function(mx, my) {
     var mini = Infinity;
-    var mini_obj;
+    var mini_dist_obj;
     for(var i=0; i<shapes.length; i++){
         var d = dist(shapes[i].center[0], shapes[i].center[1], mx, my);
         if(d <= mini){
             mini = d;
-            mini_obj = shapes[i];
+            mini_dist_obj = shapes[i];
         }
     }
 
-    if(mini_obj != undefined){
-        if(mini_obj.type == "circle"){
-            var radius = mini_obj.w/2;
-            if(dist(mx, my, mini_obj.x, mini_obj.y) <= radius){
-                return "circle";
+    if(mini_dist_obj != undefined){
+        if(mini_dist_obj.type == "circle"){
+            var radius = mini_dist_obj.w/2;
+            if(dist(mx, my, mini_dist_obj.x, mini_dist_obj.y) <= radius){
+                return ["circle", mini_dist_obj];
             }
             else{
                 return "background";
             }
         }
-        else if(mini_obj.type == "ellipse"){
-            if((abs(mx - mini_obj.x) <= mini_obj.w/2) && (abs(my - mini_obj.y) <= mini_obj.h/2)){
-                return "ellipse";
+        else if(mini_dist_obj.type == "ellipse"){
+            if((abs(mx - mini_dist_obj.x) <= mini_dist_obj.w/2) && (abs(my - mini_dist_obj.y) <= mini_dist_obj.h/2)){
+                return ["ellipse", mini_dist_obj];
             }
             else{
                 return "background";
             }
         }
-        else if(mini_obj.type == "rectangle"){
-            if((abs(mx - mini_obj.center[0]) <= mini_obj.w/2) && (abs(my - mini_obj.center[1]) <= mini_obj.h/2)){
-                return "rectangle";
+        else if(mini_dist_obj.type == "rectangle"){
+            if((abs(mx - mini_dist_obj.center[0]) <= mini_dist_obj.w/2) && (abs(my - mini_dist_obj.center[1]) <= mini_dist_obj.h/2)){
+                return ["rectangle", mini_dist_obj];
             }
             else{
                 return "background";
             }
         }
-        else if(mini_obj.type == "square"){
-            if((abs(mx - mini_obj.center[0]) <= mini_obj.w/2) && (abs(my - mini_obj.center[1]) <= mini_obj.h/2)){
-                return "square";
+        else if(mini_dist_obj.type == "square"){
+            if((abs(mx - mini_dist_obj.center[0]) <= mini_dist_obj.w/2) && (abs(my - mini_dist_obj.center[1]) <= mini_dist_obj.h/2)){
+                return ["square", mini_dist_obj];
             }
             else{
                 return "background";

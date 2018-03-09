@@ -1,5 +1,4 @@
-//var c, s;
-var currObj;
+var shape;
 
 function setup() {
 
@@ -9,17 +8,18 @@ function setup() {
 }
 
 function draw() {
-	display()
+	background("rgb(255, 255, 255)");
+	display();
+	if(isDragging){
+		shadow(shape);
+	}
 }
 
 function mousePressed() {
-	var shape = findShapeType(mouseX, mouseY);
-	console.log(shape);
+	isDragging = true;
+	shape = recognizeShape(mouseX, mouseY);
+	//console.log(shape);
 }
-// function mouseReleased() {
-
-// 	//console.log(mouseX + "  " + mouseY);
-// 	if(currObj != undefined){
-// 		drag(currObj);
-// 	}
-// }
+function mouseReleased() {
+	drag(shape, mouseX, mouseY);
+}
