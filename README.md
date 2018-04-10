@@ -27,6 +27,8 @@ p5.drag.js is a p5.js library that allows user to drag and move the primitive p5
 * The createEllipse(), createRect(), createTriangle() and findShapeType() functions belong to <b>p5.recognize.js</b>. Information about them can be found <a href="https://github.com/Arun-N/p5.recognize">here</a>
 <br>
 
+Live Example on <a href="http://plnkr.co/edit/6qwPge?p=info">Plunker</a>
+
 <b>sketch.js :</b>
 ```javascript
 var  shape;
